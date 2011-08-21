@@ -12,14 +12,22 @@ jQuery(function($){
       "keypress input[type=text]":     "blurOnEnter",
       "blur     input[type=text]":     "close"
     },
+
+    bindings: {
+      "attr    .item":                      '{ "class": "classes" }',
+      "visible .view":                      "notEditing",
+      "visible .edit":                      "editing",
+      "checked .view input[type=checkbox]": "done",
+      "text    .view span":                 "name",
+      "value   .edit input":                "name"
+    },
     
     elements: {
       "input[type=text]": "input",
-      ".item": "wrapper"
+      ".item":            "wrapper"
     },
-    
+
     init: function(){
-      this.item.bind("update",  this.render);
       this.item.bind("destroy", this.remove);
     },
     
@@ -27,6 +35,7 @@ jQuery(function($){
       var elements = $("#taskTemplate").tmpl(this.item);
       this.el.html(elements);
       this.refreshElements();
+      this.refreshBindings(this.item);
       return this;
     },
     
@@ -40,7 +49,8 @@ jQuery(function($){
     },
     
     edit: function(){
-      this.wrapper.addClass("editing");
+      this.item.editing = true;
+      this.item.save();
       this.input.focus();
     },
     
@@ -49,14 +59,16 @@ jQuery(function($){
     },
     
     close: function(){
-      this.wrapper.removeClass("editing");
-      this.item.updateAttributes({name: this.input.val()});
+      this.item.editing = false;
+      this.item.save();
     },
     
     remove: function(){
       this.el.remove();
     }
   });
+
+  window.Tasks.include(Spine.DataBind);
   
   window.TaskApp = Spine.Controller.create({
     el: $("#tasks"),

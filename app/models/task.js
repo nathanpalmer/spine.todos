@@ -20,3 +20,13 @@ Task.extend({
     jQuery(this.done()).each(function(i, rec){ rec.destroy(); });
   }
 });
+
+Task.include({
+  editing: false,
+  notEditing: function() {
+    return !this.editing;
+  },
+  classes: function() {
+    return "item" + (this.done ? " done" : "")
+  }
+});
